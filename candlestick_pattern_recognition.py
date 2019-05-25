@@ -1,8 +1,6 @@
 
 import pandas as pd
 import numpy as np
-from nsepy import get_history
-import datetime
 
 def candle_score(lst_0,lst_1,lst_2):    
     
@@ -116,25 +114,3 @@ def candle_df(df):
     
     return df_candle
 
-
-to_dt=datetime.datetime.now().date()
-from_dt=to_dt-datetime.timedelta(days=500)
-
-df=get_history('NIFTY',from_dt,to_dt,index=True)
-
-df=candle_df(df)
-df=df[0:300].copy()
-df['signal']=np.where(df['candle_cumsum']>1,1,-1)
-
-#df.plot(y=['Close','signal'],secondary_y='signal')
-
-df['signal2']=np.where(df['signal']==df['signal'].shift(1),0,df['signal'])
-
-df.plot(y=['Close','signal2'],secondary_y='signal2',figsize=(12,8))
-
-
-df['profit']=-1*df['Close']*df['signal2']
-dfp=df[df.signal2!=0].copy()
-size=(int(len(dfp)/2))*2
-
-profit=dfp[0:size]['profit'].sum()
